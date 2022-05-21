@@ -6,6 +6,7 @@ Implementaremos una biblioteca de libros, en la cual podremos consultar libros u
 
 Utilidades: 
  - Driver MySQL GoDriver: https://github.com/go-sql-driver/mysql
+  ```go install github.com/go-sql-driver/mysql``` 
 
  - Examples: http://go-database-sql.org/index.html
  - Faker: para crear datos ficticios de prueba  
