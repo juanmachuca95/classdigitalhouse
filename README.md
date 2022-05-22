@@ -52,16 +52,15 @@ Una vez programada la api tendriamos podemos implementar via get o post la petic
 
 ## Cache Implementación
 
-Cuando el dato no se encuentra en cache: 
-
 ```go
 type Cache interface {
 	GetBook(string) (models.Book, error)
+	AddBook(models.Book) bool
 }
 
 type CacheMemory struct {
 	cache map[string]models.Book
-	lock  sync.Mutex
+	l     sync.Mutex
 }
 
 func NewCacheMemory() Cache {
@@ -70,28 +69,32 @@ func NewCacheMemory() Cache {
 	}
 }
 
-func (c *CacheMemory) GetBook(name string) (models.Book, error) {
-	results, exists := c.cache[name]
+func (c *CacheMemory) GetBook(bookName string) (models.Book, error) {
+	results, exists := c.cache[bookName]
 	if !exists {
-		return models.Book{}, errors.New("no existe en cache")
+		return models.Book{}, errors.New("Este libro o existe en cache")
 	}
-	log.Println("Si existe en cache")
 	return results, nil
 }
 
 func (c *CacheMemory) AddBook(book models.Book) bool {
 	if len(c.cache) == 0 {
-		log.Println("El cache de libros esta vacio - ", len(c.cache))
+		c.l.Lock()
 		c.cache = make(map[string]models.Book)
 		c.cache[book.Book] = book
+		c.l.Unlock()
 		return true
 	}
 
+	c.l.Lock()
 	c.cache[book.Book] = book
+	c.l.Unlock()
 	return true
 }
 
 ```
+
+Cuando el dato no se encuentra en cache: 
 
 ```curl
 curl -X POST http://localhost:8080/getbook -H 'Content-Type: application/json' -d '{"book":"Don Quijote"}'
