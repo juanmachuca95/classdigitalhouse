@@ -31,31 +31,41 @@ func NewServiceHTTPBooks() *ServiceHTTPBooks {
 } */
 
 func (s *ServiceHTTPBooks) GetBook(w http.ResponseWriter, r *http.Request) {
-	tiempo := time.Now() // tiempo
-	reqBody, _ := ioutil.ReadAll(r.Body)
+	tiempo := time.Now()
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "No ha especificado los parametros.")
+		return
+	}
+
 	var request struct{ Book string }
-	json.Unmarshal(reqBody, &request)
+	err = json.Unmarshal(reqBody, &request)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "No ha sido posible parsear la request.")
+		return
+	}
 
 	book, err := s.cache.GetBook(request.Book)
-	if err != nil { // no esta en cache
-		log.Println(err.Error())
+	if err != nil {
+		log.Printf("El libro %s no esta en cache.\n", request.Book)
 
 		book, err = s.gtw.GetBook(request.Book)
 		if err != nil {
-			w.WriteHeader(http.StatusNotFound)
-			fmt.Fprintf(w, "No existe en base de datos %s ⚠️\n", err.Error())
+			w.WriteHeader(http.StatusOK)
+			fmt.Fprintf(w, "No existe el libro %s en nuestra base de datos\nTiempo de consulta ⏰ %v", request.Book, time.Since(tiempo))
 			return
 		}
 
-		log.Println("Agregado a cache")
+		/* Agregamos a cache */
 		s.cache.AddBook(book)
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "Obteniendo el libro %s desde base de datos 👎 - ⏰ tiempo %v\n", book.Book, time.Since(tiempo))
+		fmt.Fprintf(w, "Datos desde base de datos 👎\nLibro: %s\nAutor:%s\nTiempo de busqueda ⏰  %v", book.Book, book.Author, time.Since(tiempo))
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Obteniendo el libro %s desde cache 👍 - ⏰ tiempo %v\n", book.Book, time.Since(tiempo))
-	return
+	fmt.Fprintf(w, "Datos desde cache 👍\nLibro: %s\nAutor:%s\nTiempo de busqueda ⏰ %v", book.Book, book.Author, time.Since(tiempo))
 }
