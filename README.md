@@ -5,7 +5,8 @@ Implementaremos una biblioteca de libros, en la cual podremos consultar libros u
 1. Conexión a la base de datos en este caso, usaremos el motor de base de datos mysql. 
 
 Utilidades: 
- - Driver MySQL GoDriver: https://github.com/go-sql-driver/mysql
+ - Driver MySQL GoDriver
+ - https://github.com/go-sql-driver/mysql  
   ```go install github.com/go-sql-driver/mysql``` 
 
  - Examples: http://go-database-sql.org/index.html
@@ -13,6 +14,8 @@ Utilidades:
   ```go get -u github.com/bxcodec/faker/v3```
  - Gorilla Mux: 
  ```go get -u github.com/gorilla/mux```
+ - Libreria para la variables de entorno:
+ ```go get github.com/joho/godotenv```
 
     
 
@@ -37,3 +40,12 @@ use biblioteca;
 ```sql
 CREATE TABLE libros(id int NOT NULL primary key AUTO_INCREMENT, book varchar(255) NOT NULL, author varchar(255) NOT NULL, created_at DATETIME NOT NULL, updated_at DATETIME NOT NULL);
 ```
+
+
+Una vez programada la api tendriamos podemos implementar via get o post la petición al servidor:
+
+#### Metodo GET 
+  ```curl http://localhost:8080/getbook/Rayuela``` 
+
+#### o POST
+  ```curl -X POST http://localhost:8080/getbook -H 'Content-Type: application/json' -d '{"book":"Rayuela"}'```

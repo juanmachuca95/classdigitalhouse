@@ -10,7 +10,13 @@ func NewRoutes() *mux.Router {
 
 	/* Servicios*/
 	books := serviceBooks.NewServiceHTTPBooks()
-	router.HandleFunc("/getbook", books.GetBook)
 
+	// GET
+	/* router.HandleFunc("/getbook/{book}", books.GetBook).
+	Methods("GET") */
+
+	// POST
+	router.HandleFunc("/getbook", books.GetBook).
+		Methods("POST")
 	return router
 }

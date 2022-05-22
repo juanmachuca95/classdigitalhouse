@@ -22,7 +22,7 @@ func NewGatewayBook() GatewayBook {
 }
 
 func (s *ServiceBook) GetBook(bookName string) (models.Book, error) {
-	stmt, err := s.Prepare("SELECT id, book, author, created_at, updated_at FROM books")
+	stmt, err := s.Prepare("SELECT id, book, author, created_at, updated_at FROM libros WHERE book = ? LIMIT 1;")
 	if err != nil {
 		log.Fatal("Error al preparar la consulta - error: ", err)
 	}

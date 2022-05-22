@@ -29,11 +29,12 @@ func NewMySQLClient() *MySQLClient {
 	hostname := os.Getenv("HOSTNAME")
 	port := os.Getenv("PORT")
 	database := os.Getenv("DATABASE")
-	connectionString := fmt.Sprintf("%s:%s@tpc(%s:%s)/%s", user, password, hostname, port, database)
+
+	connectionString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, password, hostname, port, database)
 
 	db, err := sql.Open("mysql", connectionString)
 	if err != nil {
-		log.Fatal("No fue posible conectar con la base de datos ", database)
+		log.Fatal("No fue posible conectar con la base de datos ", connectionString)
 	}
 
 	err = db.Ping()
